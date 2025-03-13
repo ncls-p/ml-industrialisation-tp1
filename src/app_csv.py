@@ -1,19 +1,22 @@
 import os
-import pandas as pd
-import numpy as np
-from flask import Flask, jsonify, request
-from typing import List, Dict
 from datetime import datetime, timedelta
+
+import pandas as pd
+from flask import Flask, jsonify, request
 
 PATH_CSV = "data/raw/db.csv"
 
 
 def standardize_vegetable_name(name: str) -> str:
     """Standardize vegetable names to English."""
-    # Dictionary of translations and corrections
     translations = {
         "tomate": "tomato",
         "tomatoes": "tomato",
+        "tomaot": "tomato",
+        "tomatto": "tomato",
+        "poire": "pear",
+        "peer": "pear",
+        "pera": "pear",
         "carotte": "carrot",
         "zanahoria": "carrot",
         "pomme de terre": "potato",
@@ -22,6 +25,10 @@ def standardize_vegetable_name(name: str) -> str:
         "cebolla": "onion",
         "poivron": "pepper",
         "pimiento": "pepper",
+        "brusel sprout": "brussels sprout",
+        "brussel sprout": "brussels sprout",
+        "brussell sprout": "brussels sprout",
+        "brusselsprout": "brussels sprout",
     }
     name = name.lower().strip()
     return translations.get(name, name)
@@ -39,16 +46,13 @@ def compute_monthly_sales(df: pd.DataFrame) -> pd.DataFrame:
     result = []
 
     for _, row in df.iterrows():
-        # Use 'date' field instead of year_week
-        date_val = row["date"]
+        year_week = row["year_week"]
         vegetable = row["vegetable"]
-        sales = row["kilo_sold"]
+        sales = row["sales"]
 
-        # Parse year and week from date
-        date_parts = date_val.split("-")
-        year = int(date_parts[0])
-        week = int(date_parts[1])
-        year_week = year * 100 + week
+        # Parse year and week
+        year = year_week // 100
+        week = year_week % 100
 
         # Get the dates for the week
         # First day of the week (Monday)
@@ -100,12 +104,39 @@ def tag_outliers(df: pd.DataFrame) -> pd.DataFrame:
 def create_app(config=None):
     config = config or {}
     app = Flask(__name__)
+
     if "CSV_PATH" not in config:
         config["CSV_PATH"] = PATH_CSV
     app.config.update(config)
 
     # Ensure data directory exists
     os.makedirs(os.path.dirname(app.config["CSV_PATH"]), exist_ok=True)
+
+    # Create Bronze, Silver, and Gold CSV files
+    bronze_path = os.path.join(
+        os.path.dirname(app.config["CSV_PATH"]), "bronze_sales.csv"
+    )
+    silver_path = os.path.join(
+        os.path.dirname(app.config["CSV_PATH"]), "silver_sales.csv"
+    )
+    gold_path = os.path.join(os.path.dirname(app.config["CSV_PATH"]), "gold_sales.csv")
+
+    @app.route("/init_database", methods=["POST"])
+    def init_database():
+        """Initialize or reset the CSV files"""
+        # Create empty dataframes with proper columns
+        bronze_df = pd.DataFrame(columns=["year_week", "vegetable", "sales"])
+        silver_df = pd.DataFrame(columns=["year_week", "vegetable", "sales"])
+        gold_df = pd.DataFrame(
+            columns=["year_month", "vegetable", "sales", "is_outlier"]
+        )
+
+        # Save empty dataframes
+        bronze_df.to_csv(bronze_path, index=False)
+        silver_df.to_csv(silver_path, index=False)
+        gold_df.to_csv(gold_path, index=False)
+
+        return jsonify({"status": "Database initialized"}), 200
 
     @app.route("/post_sales/", methods=["POST"])
     def post_sales():
@@ -123,7 +154,7 @@ def create_app(config=None):
                     {"error": "All records must contain required columns"}
                 ), 400
 
-        # Convert from new format to internal format
+        # Convert input format to internal format
         transformed_data = []
         for record in data:
             # Extract year and week from date string (e.g., "2020-01" for year 2020, week 1)
@@ -140,28 +171,55 @@ def create_app(config=None):
                 }
             )
 
-        # Read existing data if file exists
-        if (
-            os.path.isfile(app.config["CSV_PATH"])
-            and os.path.getsize(app.config["CSV_PATH"]) > 0
-        ):
-            df = pd.read_csv(app.config["CSV_PATH"])
+        # Step 1: Update Bronze table (raw data)
+        if os.path.isfile(bronze_path) and os.path.getsize(bronze_path) > 0:
+            bronze_df = pd.read_csv(bronze_path)
             # Ensure idempotency by removing duplicates
-            df = pd.concat([df, pd.DataFrame(transformed_data)]).drop_duplicates(
-                subset=["year_week", "vegetable"]
-            )
+            bronze_df = pd.concat(
+                [bronze_df, pd.DataFrame(transformed_data)]
+            ).drop_duplicates(subset=["year_week", "vegetable"])
         else:
-            df = pd.DataFrame(transformed_data)
+            bronze_df = pd.DataFrame(transformed_data)
+        bronze_df.to_csv(bronze_path, index=False)
 
-        df.to_csv(app.config["CSV_PATH"], index=False)
+        # Step 2: Update Silver table (standardized vegetable names)
+        silver_data = []
+        for record in transformed_data:
+            silver_data.append(
+                {
+                    "year_week": record["year_week"],
+                    "vegetable": standardize_vegetable_name(record["vegetable"]),
+                    "sales": record["sales"],
+                }
+            )
+
+        if os.path.isfile(silver_path) and os.path.getsize(silver_path) > 0:
+            silver_df = pd.read_csv(silver_path)
+            silver_df = pd.concat(
+                [silver_df, pd.DataFrame(silver_data)]
+            ).drop_duplicates(subset=["year_week", "vegetable"])
+        else:
+            silver_df = pd.DataFrame(silver_data)
+        silver_df.to_csv(silver_path, index=False)
+
+        # Step 3: Update Gold table (monthly aggregated with outlier detection)
+        # Calculate monthly sales from all silver data
+        monthly_df = compute_monthly_sales(silver_df)
+
+        # Tag outliers
+        monthly_df = tag_outliers(monthly_df)
+
+        # Save to gold CSV
+        monthly_df.to_csv(gold_path, index=False)
+
         return jsonify({"status": "success"}), 200
 
     @app.route("/get_raw_sales/", methods=["GET"])
     def get_raw_sales():
-        if not os.path.isfile(app.config["CSV_PATH"]):
+        if not os.path.isfile(bronze_path) or os.path.getsize(bronze_path) == 0:
             return jsonify([]), 200
 
-        df = pd.read_csv(app.config["CSV_PATH"])
+        df = pd.read_csv(bronze_path)
 
         # Transform back to the external format
         result = []
@@ -185,46 +243,19 @@ def create_app(config=None):
     def get_monthly_sales():
         remove_outliers = request.args.get("remove_outliers", "false").lower() == "true"
 
-        if not os.path.isfile(app.config["CSV_PATH"]):
+        if not os.path.isfile(gold_path) or os.path.getsize(gold_path) == 0:
             return jsonify([]), 200
 
-        # Read and process data
-        df = pd.read_csv(app.config["CSV_PATH"])
-
-        # Create a temporary dataframe with the date field
-        temp_df = []
-        for _, row in df.iterrows():
-            year_week = row["year_week"]
-            year = year_week // 100
-            week = year_week % 100
-            date_str = f"{year}-{week:02d}"
-
-            temp_df.append(
-                {
-                    "date": date_str,
-                    "vegetable": row["vegetable"],
-                    "kilo_sold": row["sales"],
-                }
-            )
-
-        temp_df = pd.DataFrame(temp_df)
-
-        # Standardize vegetable names
-        temp_df["vegetable"] = temp_df["vegetable"].apply(standardize_vegetable_name)
-
-        # Convert to monthly sales
-        monthly_df = compute_monthly_sales(temp_df)
-
-        # Tag outliers
-        monthly_df = tag_outliers(monthly_df)
+        # Read gold data
+        gold_df = pd.read_csv(gold_path)
 
         # Filter outliers if requested
         if remove_outliers:
-            monthly_df = monthly_df[~monthly_df["is_outlier"]]
+            gold_df = gold_df[~gold_df["is_outlier"]]
 
-        # Transform to the right output format
+        # Transform to the correct output format
         result = []
-        for _, row in monthly_df.iterrows():
+        for _, row in gold_df.iterrows():
             year_month = row["year_month"]
             year = int(year_month[:4])
             month = int(year_month[4:])

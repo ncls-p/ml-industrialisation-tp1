@@ -1,9 +1,8 @@
 import os
-import pandas as pd
-import numpy as np
-from flask import Flask, jsonify, request
-from typing import List, Dict
 from datetime import datetime, timedelta
+
+import pandas as pd
+from flask import Flask, jsonify, request
 
 PATH_CSV = "data/raw/db.csv"
 

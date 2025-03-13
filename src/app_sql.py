@@ -1,10 +1,8 @@
 import os
 import sqlite3
+from datetime import datetime, timedelta
 import pandas as pd
 from flask import Flask, jsonify, request
-from typing import Dict, List
-import numpy as np
-from datetime import datetime, timedelta
 
 DATABASE_PATH = "data/raw/sales.db"
 
@@ -14,6 +12,11 @@ def standardize_vegetable_name(name: str) -> str:
     translations = {
         "tomate": "tomato",
         "tomatoes": "tomato",
+        "tomaot": "tomato",
+        "tomatto": "tomato",
+        "poire": "pear",
+        "peer": "pear",
+        "pera": "pear",
         "carotte": "carrot",
         "zanahoria": "carrot",
         "pomme de terre": "potato",
@@ -22,6 +25,10 @@ def standardize_vegetable_name(name: str) -> str:
         "cebolla": "onion",
         "poivron": "pepper",
         "pimiento": "pepper",
+        "brusel sprout": "brussels sprout",
+        "brussel sprout": "brussels sprout",
+        "brussell sprout": "brussels sprout",
+        "brusselsprout": "brussels sprout",
     }
     name = name.lower().strip()
     return translations.get(name, name)
