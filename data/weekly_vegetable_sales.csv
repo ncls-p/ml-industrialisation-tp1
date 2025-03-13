@@ -1,0 +1,625 @@
+year_week,vegetable,sales
+202001,Tomate,489
+202001,Peer,95
+202001,Brussell Sprout,11
+202002,Tomato,505
+202002,Peer,99
+202002,Brussel Sprout,9
+202003,Tomato,485
+202003,Pear,82
+202003,Brusselsprout,9
+202004,Tomate,538
+202004,Peer,100
+202004,Brussell Sprout,11
+202005,Tomatto,467
+202005,Poire,87
+202005,Brussell Sprout,11
+202006,Tomato,575
+202006,Peer,118
+202006,Brusel Sprout,11
+202007,Tomato,500
+202007,Pera,95
+202007,Brusel Sprout,11
+202008,Tomate,552
+202008,Poire,100
+202008,Brussel Sprout,10
+202009,Tomatto,1056
+202009,Pera,108
+202009,Brussel Sprout,11
+202010,Tomatto,972
+202010,Peer,106
+202010,Brussel Sprout,10
+202011,Tomatto,841
+202011,Peer,97
+202011,Brussel Sprout,11
+202012,Tomatto,1091
+202012,Pear,108
+202012,Brussel Sprout,8
+202013,Tomato,885
+202013,Poire,106
+202013,Brusel Sprout,11
+202014,Tomatto,916
+202014,Peer,100
+202014,Brussel Sprout,10
+202015,Tomatto,1182
+202015,Poire,84
+202015,Brussell Sprout,11
+202016,tomaot,827
+202016,Pera,95
+202016,Brusel Sprout,9
+202017,Tomate,1065
+202017,Pera,105
+202017,Brussell Sprout,9
+202018,tomaot,921
+202018,Poire,108
+202018,Brussel Sprout,10
+202019,tomaot,1059
+202019,Poire,93
+202019,Brusselsprout,8
+202020,tomaot,1052
+202020,Pear,109
+202020,Brusel Sprout,9
+202021,Tomatto,1069
+202021,Peer,93
+202021,Brusselsprout,10
+202022,tomaot,2988
+202022,Peer,84
+202022,Brusel Sprout,11
+202023,Tomato,3011
+202023,Poire,106
+202023,Brusselsprout,9
+202024,Tomato,3492
+202024,Peer,81
+202024,Brussell Sprout,11
+202025,Tomate,3525
+202025,Poire,114
+202025,Brussell Sprout,10
+202026,tomaot,3445
+202026,Peer,119
+202026,Brussell Sprout,11
+202027,Tomate,2489
+202027,Poire,81
+202027,Brussell Sprout,8
+202028,Tomato,3082
+202028,Pera,102
+202028,Brusel Sprout,9
+202029,Tomatto,3213
+202029,Pear,83
+202029,Brussell Sprout,11
+202030,Tomate,2851
+202030,Pear,114
+202030,Brussel Sprout,11
+202031,tomaot,2560
+202031,Poire,103
+202031,Brusselsprout,10
+202032,Tomate,3201
+202032,Pera,86
+202032,Brussell Sprout,9
+202033,Tomate,3195
+202033,Peer,91
+202033,Brussell Sprout,11
+202034,Tomatto,2881
+202034,Pera,86
+202034,Brussel Sprout,8
+202035,Tomato,2764
+202035,Pear,88
+202035,Brusel Sprout,10
+202036,Tomate,1000
+202036,Pear,90
+202036,Brusel Sprout,9
+202037,Tomato,877
+202037,Pear,83
+202037,Brusselsprout,10
+202038,tomaot,1020
+202038,Pera,108
+202038,Brussell Sprout,9
+202039,tomaot,911
+202039,Pear,82
+202039,Brussell Sprout,10
+202040,tomaot,1030
+202040,Pera,112
+202040,Brussell Sprout,11
+202041,Tomatto,936
+202041,Peer,98
+202041,Brusel Sprout,9
+202042,Tomato,849
+202042,Pear,97
+202042,Brusel Sprout,9
+202043,Tomate,1036
+202043,Poire,100
+202043,Brusel Sprout,8
+202044,Tomato,995
+202044,Pear,80
+202044,Brussell Sprout,10
+202045,Tomato,877
+202045,Poire,86
+202045,Brusel Sprout,10
+202046,Tomate,1041
+202046,Poire,114
+202046,Brusselsprout,9
+202047,tomaot,817
+202047,Pera,115
+202047,Brusel Sprout,11
+202048,Tomato,833
+202048,Pear,92
+202048,Brussel Sprout,10
+202049,tomaot,418
+202049,Poire,80
+202049,Brussell Sprout,9
+202050,Tomate,400
+202050,Pera,98
+202050,Brusel Sprout,11
+202051,Tomato,492
+202051,Poire,94
+202051,Brussell Sprout,10
+202052,Tomate,558
+202052,Poire,88
+202052,Brusel Sprout,10
+202101,Tomate,597
+202101,Peer,101
+202101,Brussel Sprout,10
+202102,Tomatto,427
+202102,Pera,114
+202102,Brussell Sprout,9
+202103,Tomatto,587
+202103,Poire,103
+202103,Brusselsprout,10
+202104,Tomato,544
+202104,Pear,100
+202104,Brussell Sprout,8
+202105,Tomatto,444
+202105,Peer,104
+202105,Brusel Sprout,9
+202106,Tomate,466
+202106,Pear,88
+202106,Brusselsprout,10
+202107,Tomato,438
+202107,Peer,85
+202107,Brussell Sprout,10
+202108,tomaot,402
+202108,Pera,80
+202108,Brusel Sprout,8
+202109,Tomatto,1174
+202109,Peer,113
+202109,Brussel Sprout,8
+202110,tomaot,872
+202110,Pear,105
+202110,Brussel Sprout,8
+202111,Tomate,876
+202111,Pera,107
+202111,Brussel Sprout,9
+202112,Tomate,913
+202112,Pear,88
+202112,Brussel Sprout,11
+202113,tomaot,817
+202113,Pera,99
+202113,Brusel Sprout,11
+202114,Tomatto,880
+202114,Pear,104
+202114,Brussell Sprout,11
+202115,Tomato,924
+202115,Pear,90
+202115,Brusselsprout,8
+202116,tomaot,1111
+202116,Peer,84
+202116,Brusel Sprout,11
+202117,tomaot,1148
+202117,Pear,112
+202117,Brusselsprout,11
+202118,Tomate,955
+202118,Poire,106
+202118,Brussel Sprout,10
+202119,Tomato,879
+202119,Pear,102
+202119,Brussel Sprout,8
+202120,tomaot,964
+202120,Poire,108
+202120,Brussell Sprout,9
+202121,Tomato,1191
+202121,Pear,102
+202121,Brussel Sprout,8
+202122,Tomato,863
+202122,Poire,115
+202122,Brusel Sprout,10
+202123,Tomatto,2525
+202123,Pera,96
+202123,Brussell Sprout,8
+202124,Tomato,3589
+202124,Peer,86
+202124,Brusel Sprout,10
+202125,tomaot,3056
+202125,Pera,86
+202125,Brusselsprout,9
+202126,Tomato,3234
+202126,Pera,118
+202126,Brusselsprout,8
+202127,tomaot,2526
+202127,Poire,86
+202127,Brussell Sprout,11
+202128,Tomatto,2405
+202128,Peer,107
+202128,Brussel Sprout,10
+202129,Tomate,3555
+202129,Poire,115
+202129,Brusselsprout,10
+202130,tomaot,2403
+202130,Pear,113
+202130,Brusselsprout,9
+202131,Tomatto,2475
+202131,Peer,115
+202131,Brusselsprout,9
+202132,Tomate,2783
+202132,Pera,88
+202132,Brusel Sprout,8
+202133,Tomatto,3073
+202133,Peer,88
+202133,Brussell Sprout,9
+202134,Tomatto,3049
+202134,Peer,113
+202134,Brusselsprout,11
+202135,Tomatto,2517
+202135,Pear,110
+202135,Brussel Sprout,9
+202136,Tomato,900
+202136,Pear,108
+202136,Brusel Sprout,8
+202137,Tomate,827
+202137,Peer,90
+202137,Brusselsprout,11
+202138,tomaot,1139
+202138,Peer,110
+202138,Brussell Sprout,8
+202139,Tomato,1087
+202139,Peer,113
+202139,Brussell Sprout,9
+202140,Tomato,835
+202140,Pear,110
+202140,Brusselsprout,9
+202141,Tomatto,952
+202141,Poire,86
+202141,Brusel Sprout,11
+202142,Tomatto,917
+202142,Peer,104
+202142,Brussell Sprout,11
+202143,Tomatto,1070
+202143,Poire,87
+202143,Brusselsprout,8
+202144,tomaot,803
+202144,Peer,81
+202144,Brussell Sprout,9
+202145,Tomatto,807
+202145,Poire,114
+202145,Brusel Sprout,8
+202146,tomaot,1011
+202146,Peer,85
+202146,Brusel Sprout,9
+202147,Tomato,1177
+202147,Pera,91
+202147,Brussell Sprout,11
+202148,Tomatto,1046
+202148,Pear,118
+202148,Brussell Sprout,11
+202149,tomaot,551
+202149,Pera,91
+202149,Brussell Sprout,8
+202150,tomaot,439
+202150,Pera,94
+202150,Brusselsprout,9
+202151,Tomatto,400
+202151,Pera,112
+202151,Brussel Sprout,10
+202152,Tomato,568
+202152,Poire,117
+202152,Brussell Sprout,9
+202201,Tomatto,595
+202201,Poire,108
+202201,Brussell Sprout,8
+202202,Tomato,434
+202202,Poire,88
+202202,Brussel Sprout,9
+202203,tomaot,411
+202203,Pera,108
+202203,Brusel Sprout,8
+202204,Tomatto,469
+202204,Poire,86
+202204,Brusselsprout,10
+202205,Tomatto,554
+202205,Pear,81
+202205,Brussel Sprout,9
+202206,Tomate,402
+202206,Pear,114
+202206,Brussell Sprout,8
+202207,Tomate,444
+202207,Poire,106
+202207,Brusselsprout,10
+202208,Tomatto,420
+202208,Pear,115
+202208,Brusel Sprout,9
+202209,tomaot,533
+202209,Poire,93
+202209,Brussell Sprout,8
+202210,Tomato,1199
+202210,Peer,98
+202210,Brussell Sprout,10
+202211,Tomato,1054
+202211,Pear,105
+202211,Brussell Sprout,9
+202212,Tomate,886
+202212,Poire,115
+202212,Brusel Sprout,8
+202213,Tomate,1157
+202213,Pear,103
+202213,Brussell Sprout,10
+202214,Tomato,896
+202214,Poire,90
+202214,Brusel Sprout,10
+202215,tomaot,1075
+202215,Pear,101
+202215,Brusel Sprout,11
+202216,tomaot,1146
+202216,Poire,81
+202216,Brussel Sprout,10
+202217,tomaot,973
+202217,Peer,91
+202217,Brusselsprout,10
+202218,Tomate,1038
+202218,Poire,94
+202218,Brusel Sprout,11
+202219,Tomate,1022
+202219,Pera,102
+202219,Brussell Sprout,10
+202220,Tomate,1027
+202220,Poire,97
+202220,Brussel Sprout,9
+202221,Tomate,899
+202221,Poire,91
+202221,Brusselsprout,10
+202222,tomaot,1070
+202222,Pear,90
+202222,Brussell Sprout,10
+202223,Tomatto,2740
+202223,Poire,106
+202223,Brussel Sprout,11
+202224,Tomato,3088
+202224,Peer,82
+202224,Brussel Sprout,10
+202225,tomaot,3379
+202225,Pera,85
+202225,Brusel Sprout,10
+202226,tomaot,2748
+202226,Poire,101
+202226,Brusel Sprout,9
+202227,tomaot,3008
+202227,Peer,82
+202227,Brussell Sprout,9
+202228,tomaot,3312
+202228,Pear,111
+202228,Brussell Sprout,10
+202229,Tomato,2761
+202229,Poire,110
+202229,Brusel Sprout,8
+202230,Tomatto,3103
+202230,Pera,94
+202230,Brusel Sprout,9
+202231,Tomato,3523
+202231,Peer,101
+202231,Brussell Sprout,11
+202232,Tomato,2977
+202232,Peer,87
+202232,Brussel Sprout,10
+202233,Tomato,3523
+202233,Pera,114
+202233,Brusel Sprout,9
+202234,Tomate,2819
+202234,Poire,83
+202234,Brussell Sprout,11
+202235,Tomatto,3130
+202235,Poire,82
+202235,Brussell Sprout,11
+202236,Tomato,1102
+202236,Poire,114
+202236,Brusselsprout,10
+202237,tomaot,1100
+202237,Poire,119
+202237,Brusselsprout,10
+202238,Tomate,905
+202238,Pera,110
+202238,Brusselsprout,8
+202239,Tomatto,1098
+202239,Pera,105
+202239,Brussell Sprout,9
+202240,Tomate,1185
+202240,Peer,104
+202240,Brusel Sprout,10
+202241,Tomatto,1014
+202241,Pear,108
+202241,Brusselsprout,10
+202242,Tomate,1150
+202242,Pear,106
+202242,Brussel Sprout,9
+202243,tomaot,960
+202243,Poire,115
+202243,Brussel Sprout,11
+202244,tomaot,1108
+202244,Peer,97
+202244,Brussel Sprout,9
+202245,Tomate,1163
+202245,Poire,96
+202245,Brussell Sprout,9
+202246,Tomato,1194
+202246,Pear,98
+202246,Brusselsprout,10
+202247,Tomatto,913
+202247,Pear,113
+202247,Brusel Sprout,10
+202248,Tomato,845
+202248,Pear,109
+202248,Brussell Sprout,10
+202249,Tomato,579
+202249,Poire,114
+202249,Brussell Sprout,8
+202250,Tomate,545
+202250,Poire,87
+202250,Brusel Sprout,10
+202251,Tomatto,560
+202251,Pear,107
+202251,Brussel Sprout,10
+202252,Tomato,541
+202252,Poire,90
+202252,Brusel Sprout,11
+202301,tomaot,484
+202301,Pear,85
+202301,Brusselsprout,9
+202302,Tomate,406
+202302,Peer,80
+202302,Brusselsprout,9
+202303,Tomate,560
+202303,Pera,115
+202303,Brussel Sprout,10
+202304,Tomatto,588
+202304,Pera,94
+202304,Brusselsprout,8
+202305,Tomato,431
+202305,Pear,107
+202305,Brusel Sprout,10
+202306,Tomatto,411
+202306,Pear,97
+202306,Brusel Sprout,8
+202307,Tomate,567
+202307,Pera,81
+202307,Brusel Sprout,10
+202308,Tomate,569
+202308,Pera,99
+202308,Brussell Sprout,11
+202309,Tomato,526
+202309,Poire,101
+202309,Brusselsprout,9
+202310,Tomato,1126
+202310,Pear,98
+202310,Brusselsprout,11
+202311,Tomate,1044
+202311,Peer,119
+202311,Brussell Sprout,10
+202312,Tomato,882
+202312,Peer,97
+202312,Brussel Sprout,9
+202313,Tomato,899
+202313,Poire,90
+202313,Brusselsprout,11
+202314,Tomate,827
+202314,Pera,108
+202314,Brusel Sprout,9
+202315,Tomate,1135
+202315,Pear,94
+202315,Brussel Sprout,9
+202316,Tomatto,1173
+202316,Pera,109
+202316,Brusselsprout,10
+202317,Tomate,993
+202317,Pear,114
+202317,Brusselsprout,8
+202318,Tomatto,1140
+202318,Pera,96
+202318,Brusselsprout,11
+202319,tomaot,1096
+202319,Peer,92
+202319,Brusselsprout,11
+202320,Tomate,1023
+202320,Poire,97
+202320,Brusel Sprout,8
+202321,Tomate,905
+202321,Poire,80
+202321,Brussell Sprout,8
+202322,Tomato,1102
+202322,Pear,84
+202322,Brussel Sprout,11
+202323,Tomatto,2508
+202323,Pear,93
+202323,Brusel Sprout,8
+202324,tomaot,2695
+202324,Poire,87
+202324,Brussell Sprout,9
+202325,Tomatto,3006
+202325,Pera,82
+202325,Brussell Sprout,9
+202326,tomaot,2932
+202326,Peer,109
+202326,Brussell Sprout,10
+202327,Tomatto,3558
+202327,Peer,101
+202327,Brussell Sprout,9
+202328,Tomato,2671
+202328,Pear,84
+202328,Brusel Sprout,9
+202329,Tomato,3002
+202329,Pera,114
+202329,Brusselsprout,9
+202330,Tomato,2577
+202330,Pear,84
+202330,Brussel Sprout,9
+202331,Tomatto,3219
+202331,Pera,105
+202331,Brussell Sprout,9
+202332,tomaot,3567
+202332,Pera,86
+202332,Brusel Sprout,11
+202333,Tomato,3124
+202333,Peer,80
+202333,Brusel Sprout,11
+202334,Tomatto,3352
+202334,Pera,85
+202334,Brussel Sprout,10
+202335,Tomato,2562
+202335,Pear,96
+202335,Brussel Sprout,11
+202336,Tomate,810
+202336,Peer,94
+202336,Brussel Sprout,9
+202337,tomaot,1058
+202337,Pear,89
+202337,Brusselsprout,8
+202338,Tomate,1062
+202338,Pear,102
+202338,Brussel Sprout,8
+202339,Tomato,1043
+202339,Pera,85
+202339,Brusselsprout,11
+202340,Tomato,1006
+202340,Peer,105
+202340,Brusel Sprout,9
+202341,Tomate,1172
+202341,Pear,87
+202341,Brusel Sprout,11
+202342,tomaot,982
+202342,Peer,103
+202342,Brussel Sprout,9
+202343,Tomato,960
+202343,Pear,99
+202343,Brussel Sprout,10
+202344,Tomato,1074
+202344,Poire,105
+202344,Brussel Sprout,8
+202345,tomaot,1066
+202345,Pear,106
+202345,Brussell Sprout,10
+202346,Tomatto,935
+202346,Pera,105
+202346,Brussel Sprout,11
+202347,tomaot,1117
+202347,Pera,90
+202347,Brusel Sprout,9
+202348,tomaot,846
+202348,Poire,106
+202348,Brusselsprout,11
+202349,Tomate,592
+202349,Poire,110
+202349,Brusel Sprout,9
+202350,Tomate,470
+202350,Poire,95
+202350,Brussell Sprout,10
+202351,Tomate,580
+202351,Pera,96
+202351,Brussel Sprout,11
+202352,Tomatto,558
+202352,Pear,98
+202352,Brusselsprout,11
