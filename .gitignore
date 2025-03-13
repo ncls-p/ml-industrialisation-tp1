@@ -1,0 +1,7 @@
+*.pyc
+__pycache__/
+
+bronze_sales.csv
+silver_sales.csv
+gold_sales.csv
+sales.db
