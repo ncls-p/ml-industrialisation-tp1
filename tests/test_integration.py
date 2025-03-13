@@ -1,8 +1,7 @@
 import os
-import tempfile
-
 import pandas as pd
 import pytest
+import tempfile
 
 from app import create_app
 
@@ -25,7 +24,7 @@ def test_post_data(app):
     with app.test_client() as client:
         response = client.post(
             "post_data",
-            json={"year_week": 202001, "vegetable": "tomato", "sales": 100},
+            json=[{"year_week": 202001, "vegetable": "tomato", "sales": 100}],
         )
 
     assert response.status_code == 200

@@ -18,15 +18,16 @@ def create_app(config=None):
     @app.route("/post_data", methods=["POST"])
     def post_data():
         data = request.json
+        df_new = pd.DataFrame(data)
 
         if (
             os.path.isfile(app.config["CSV_PATH"])
             and os.path.getsize(app.config["CSV_PATH"]) > 0
         ):
             df = pd.read_csv(app.config["CSV_PATH"])
-            df = df.append(data, ignore_index=True)
+            df = pd.concat([df, df_new])
         else:
-            df = pd.DataFrame([data])
+            df = df_new
 
         df.to_csv(app.config["CSV_PATH"], index=False)
 
