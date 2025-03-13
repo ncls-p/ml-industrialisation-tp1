@@ -7,7 +7,7 @@ class VegetableSalesUser(HttpUser):
     wait_time = between(0.01, 0.1)
 
     @task(50)
-    def post_data(self):
+    def post_sales(self):
         year = random.randint(2020, 2023)
         week = random.randint(1, 52)
         date = f"{year}-{week:02d}"
