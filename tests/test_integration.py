@@ -12,16 +12,19 @@ from src.app_csv import create_app
 
 @pytest.fixture
 def app():
-    temp_csv = tempfile.NamedTemporaryFile(delete=False, suffix=".csv")
-    temp_csv.close()
-
-    config = {"TESTING": True, "CSV_PATH": temp_csv.name}
-
+    temp_dir = tempfile.mkdtemp()
+    temp_csv = os.path.join(temp_dir, "test_db.csv")
+    config = {"TESTING": True, "CSV_PATH": temp_csv}
     app = create_app(config)
+
+    with app.test_client() as client:
+        client.post("/init_database")
 
     yield app
 
-    os.remove(temp_csv.name)
+    for file in os.listdir(temp_dir):
+        os.remove(os.path.join(temp_dir, file))
+    os.rmdir(temp_dir)
 
 
 def test_post_data(app):
@@ -38,7 +41,10 @@ def test_post_data(app):
         )
         assert response.status_code == 200
 
-        df = pd.read_csv(app.config["CSV_PATH"])
+        bronze_path = os.path.join(
+            os.path.dirname(app.config["CSV_PATH"]), "bronze_sales.csv"
+        )
+        df = pd.read_csv(bronze_path)
         assert len(df) == 1
         assert df.iloc[0].to_dict() == {
             "year_week": 202001,
@@ -70,6 +76,8 @@ def test_partial_valid_data(app):
 
 def test_get_raw_sales(app):
     with app.test_client() as client:
+        client.post("/init_database")
+
         client.post(
             "/post_sales/",
             json=[
@@ -87,10 +95,12 @@ def test_get_raw_sales(app):
 
 def test_get_monthly_sales(app):
     with app.test_client() as client:
+        client.post("/init_database")
+
         test_data = [
             {"date": "2020-01", "vegetable": "tomate", "kilo_sold": 100},
             {"date": "2020-02", "vegetable": "tomato", "kilo_sold": 150},
-            {"date": "2020-03", "vegetable": "tomatoes", "kilo_sold": 1000},  # outlier
+            {"date": "2020-03", "vegetable": "tomatoes", "kilo_sold": 1000},
             {"date": "2020-04", "vegetable": "carrot", "kilo_sold": 200},
         ]
         client.post("/post_sales/", json=test_data)
@@ -111,6 +121,8 @@ def test_get_monthly_sales(app):
 
 def test_vegetable_name_standardization(app):
     with app.test_client() as client:
+        client.post("/init_database")
+
         test_data = [
             {"date": "2020-01", "vegetable": "tomate", "kilo_sold": 100},
             {"date": "2020-01", "vegetable": "carotte", "kilo_sold": 150},
@@ -122,3 +134,21 @@ def test_vegetable_name_standardization(app):
         data = response.get_json()
         vegetables = {d["vegetable"] for d in data}
         assert vegetables.issubset({"tomato", "carrot", "potato"})
+
+
+def test_init_database(app):
+    """Test that the /init_database endpoint properly initializes or resets the database"""
+    with app.test_client() as client:
+        client.post(
+            "/post_sales/",
+            json=[{"date": "2020-01", "vegetable": "tomato", "kilo_sold": 100}],
+        )
+
+        response = client.get("/get_raw_sales/")
+        assert len(response.get_json()) > 0
+
+        response = client.post("/init_database")
+        assert response.status_code == 200
+
+        response = client.get("/get_raw_sales/")
+        assert len(response.get_json()) == 0

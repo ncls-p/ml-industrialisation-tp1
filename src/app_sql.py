@@ -1,6 +1,7 @@
 import os
 import sqlite3
 from datetime import datetime, timedelta
+
 import pandas as pd
 from flask import Flask, jsonify, request
 
@@ -38,7 +39,6 @@ def create_tables(connection):
     """Create tables if they don't exist"""
     cursor = connection.cursor()
 
-    # Bronze table - raw data
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS bronze_sales (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -49,7 +49,6 @@ def create_tables(connection):
     )
     """)
 
-    # Silver table - standardized vegetables
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS silver_sales (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -60,7 +59,6 @@ def create_tables(connection):
     )
     """)
 
-    # Gold table - monthly aggregated data with outlier detection
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS gold_sales (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -83,7 +81,6 @@ def compute_monthly_sales(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         return pd.DataFrame(columns=["year_month", "vegetable", "sales", "is_outlier"])
 
-    # Create result dataframe
     result = []
 
     for _, row in df.iterrows():
@@ -91,16 +88,11 @@ def compute_monthly_sales(df: pd.DataFrame) -> pd.DataFrame:
         vegetable = row["vegetable"]
         sales = row["sales"]
 
-        # Parse year and week
         year = year_week // 100
         week = year_week % 100
 
-        # Get the dates for the week
-        # First day of the week (Monday)
-        # %W format: Week number with the first Monday as the first day of week one
         start_date = datetime.strptime(f"{year}-{week}-1", "%Y-%W-%w")
 
-        # Analyze which months the days of this week belong to
         month_days = {}
 
         for i in range(7):
@@ -108,14 +100,12 @@ def compute_monthly_sales(df: pd.DataFrame) -> pd.DataFrame:
             month_key = current_date.strftime("%Y%m")
             month_days[month_key] = month_days.get(month_key, 0) + 1
 
-        # Distribute sales proportionally to months
         for month, days in month_days.items():
             month_sales = sales * (days / 7.0)
             result.append(
                 {"year_month": month, "vegetable": vegetable, "sales": month_sales}
             )
 
-    # Convert to DataFrame and aggregate by month and vegetable
     monthly_df = pd.DataFrame(result)
 
     if not monthly_df.empty:
@@ -136,7 +126,7 @@ def tag_outliers(df: pd.DataFrame) -> pd.DataFrame:
         mask = df["vegetable"] == vegetable
         mean = df.loc[mask, "sales"].mean()
         std = df.loc[mask, "sales"].std()
-        if not pd.isna(std):  # Avoid division by zero
+        if not pd.isna(std):
             df.loc[mask, "is_outlier"] = df.loc[mask, "sales"] > (mean + 5 * std)
 
     return df
@@ -150,10 +140,8 @@ def create_app(config=None):
         config["DATABASE_PATH"] = DATABASE_PATH
     app.config.update(config)
 
-    # Ensure the directory exists
     os.makedirs(os.path.dirname(app.config["DATABASE_PATH"]), exist_ok=True)
 
-    # Initialize database connection and tables
     with sqlite3.connect(app.config["DATABASE_PATH"]) as conn:
         create_tables(conn)
 
@@ -175,7 +163,6 @@ def create_app(config=None):
         if not isinstance(data, list):
             return jsonify({"error": "Data must be a list of records"}), 400
 
-        # Validate all records before processing any
         required_columns = {"date", "vegetable", "kilo_sold"}
         for record in data:
             if not isinstance(record, dict) or not all(
@@ -185,10 +172,8 @@ def create_app(config=None):
                     {"error": "All records must contain required columns"}
                 ), 400
 
-        # Convert input format to internal format
         transformed_data = []
         for record in data:
-            # Extract year and week from date string (e.g., "2020-01" for year 2020, week 1)
             date_parts = record["date"].split("-")
             year = int(date_parts[0])
             week = int(date_parts[1])
@@ -203,7 +188,6 @@ def create_app(config=None):
             )
 
         with sqlite3.connect(app.config["DATABASE_PATH"]) as conn:
-            # Step 1: Insert into Bronze table
             cursor = conn.cursor()
             for record in transformed_data:
                 cursor.execute(
@@ -214,7 +198,6 @@ def create_app(config=None):
                     (record["year_week"], record["vegetable"], record["sales"]),
                 )
 
-            # Step 2: Transform and insert into Silver table (standardize names)
             for record in transformed_data:
                 std_vegetable = standardize_vegetable_name(record["vegetable"])
                 cursor.execute(
@@ -225,18 +208,13 @@ def create_app(config=None):
                     (record["year_week"], std_vegetable, record["sales"]),
                 )
 
-            # Step 3: Process for Gold table
-            # Read all silver data
             silver_df = pd.read_sql_query("SELECT * FROM silver_sales", conn)
 
             if not silver_df.empty:
-                # Compute monthly sales
                 monthly_df = compute_monthly_sales(silver_df)
 
-                # Tag outliers
                 monthly_df = tag_outliers(monthly_df)
 
-                # Insert into Gold table
                 for _, row in monthly_df.iterrows():
                     cursor.execute(
                         """
@@ -262,7 +240,6 @@ def create_app(config=None):
                 "SELECT year_week, vegetable, sales FROM bronze_sales", conn
             )
 
-        # Transform back to the external format
         result = []
         for _, row in df.iterrows():
             year_week = row["year_week"]
@@ -292,11 +269,9 @@ def create_app(config=None):
 
             df = pd.read_sql_query(query, conn)
 
-            # Convert is_outlier from int to bool for JSON
             if not df.empty:
                 df["is_outlier"] = df["is_outlier"].astype(bool)
 
-        # Transform to the correct output format
         result = []
         for _, row in df.iterrows():
             year_month = row["year_month"]

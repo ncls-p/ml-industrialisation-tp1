@@ -1,10 +1,11 @@
 import os
+import sqlite3
 import sys
 import tempfile
 from pathlib import Path
+
 import pandas as pd
 import pytest
-import sqlite3
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from src.app_sql import create_app
@@ -23,17 +24,14 @@ def app():
 def test_init_database(app):
     """Test that /init_database endpoint correctly initializes the database"""
     with app.test_client() as client:
-        # Insert some test data first
         client.post(
             "/post_sales/",
             json=[{"date": "2020-01", "vegetable": "tomato", "kilo_sold": 100}],
         )
 
-        # Initialize the database
         response = client.post("/init_database")
         assert response.status_code == 200
 
-        # Check that database tables are empty
         with sqlite3.connect(app.config["DATABASE_PATH"]) as conn:
             bronze = pd.read_sql_query("SELECT * FROM bronze_sales", conn)
             silver = pd.read_sql_query("SELECT * FROM silver_sales", conn)
@@ -47,10 +45,8 @@ def test_init_database(app):
 def test_post_sales_idempotence(app):
     """Test that posting the same data twice doesn't duplicate entries in SQL DB"""
     with app.test_client() as client:
-        # Initialize the database
         client.post("/init_database")
 
-        # Post the same data twice
         response = client.post(
             "/post_sales/",
             json=[{"date": "2020-01", "vegetable": "tomato", "kilo_sold": 100}],
@@ -63,7 +59,6 @@ def test_post_sales_idempotence(app):
         )
         assert response.status_code == 200
 
-        # Verify there's only one entry in the database
         with sqlite3.connect(app.config["DATABASE_PATH"]) as conn:
             bronze = pd.read_sql_query("SELECT * FROM bronze_sales", conn)
             assert len(bronze) == 1
@@ -74,7 +69,7 @@ def test_invalid_data_sql(app):
     with app.test_client() as client:
         response = client.post(
             "/post_sales/",
-            json=[{"date": "2020-01"}],  # Missing required fields
+            json=[{"date": "2020-01"}],
         )
         assert response.status_code == 400
 
@@ -87,13 +82,12 @@ def test_partial_invalid_data_sql(app):
         data = [
             {"date": "2020-01", "vegetable": "tomato", "kilo_sold": 100},
             {"date": "2020-02", "vegetable": "carrot", "kilo_sold": 150},
-            {"date": "2020-03"},  # Invalid record
+            {"date": "2020-03"},
             {"date": "2020-04", "vegetable": "potato", "kilo_sold": 200},
         ]
         response = client.post("/post_sales/", json=data)
         assert response.status_code == 400
 
-        # Verify no data was inserted
         with sqlite3.connect(app.config["DATABASE_PATH"]) as conn:
             bronze = pd.read_sql_query("SELECT * FROM bronze_sales", conn)
             assert len(bronze) == 0
@@ -132,12 +126,11 @@ def test_get_monthly_sales_sql(app):
                 "date": "2020-03",
                 "vegetable": "tomatoes",
                 "kilo_sold": 1000,
-            },  # potential outlier
+            },
             {"date": "2020-04", "vegetable": "carrot", "kilo_sold": 200},
         ]
         client.post("/post_sales/", json=test_data)
 
-        # Get all monthly sales
         response = client.get("/get_monthly_sales/")
         assert response.status_code == 200
 
@@ -147,7 +140,6 @@ def test_get_monthly_sales_sql(app):
             veg in ["tomato", "carrot"] for d in data for veg in [d["vegetable"]]
         )
 
-        # Get only non-outlier data
         response = client.get("/get_monthly_sales/?remove_outliers=true")
         assert response.status_code == 200
 
@@ -188,22 +180,22 @@ def test_extended_translations(app):
                 "date": "2020-01",
                 "vegetable": "tomatto",
                 "kilo_sold": 100,
-            },  # Misspelling
+            },
             {
                 "date": "2020-01",
                 "vegetable": "tomaot",
                 "kilo_sold": 150,
-            },  # Another misspelling
+            },
             {
                 "date": "2020-01",
                 "vegetable": "peer",
                 "kilo_sold": 200,
-            },  # English variation
+            },
             {
                 "date": "2020-01",
                 "vegetable": "brusselsprout",
                 "kilo_sold": 250,
-            },  # No space
+            },
         ]
         client.post("/post_sales/", json=test_data)
 

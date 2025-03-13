@@ -9,7 +9,6 @@ PATH_CSV = "data/raw/db.csv"
 
 def standardize_vegetable_name(name: str) -> str:
     """Standardize vegetable names to English."""
-    # Dictionary of translations and corrections
     translations = {
         "tomate": "tomato",
         "tomatoes": "tomato",
@@ -34,7 +33,6 @@ def compute_monthly_sales(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         return pd.DataFrame(columns=["year_month", "vegetable", "sales", "is_outlier"])
 
-    # Create result dataframe
     result = []
 
     for _, row in df.iterrows():
@@ -42,16 +40,11 @@ def compute_monthly_sales(df: pd.DataFrame) -> pd.DataFrame:
         vegetable = row["vegetable"]
         sales = row["sales"]
 
-        # Parse year and week
         year = year_week // 100
         week = year_week % 100
 
-        # Get the dates for the week
-        # First day of the week (Monday)
-        # %W format: Week number with the first Monday as the first day of week one
         start_date = datetime.strptime(f"{year}-{week}-1", "%Y-%W-%w")
 
-        # Analyze which months the days of this week belong to
         month_days = {}
 
         for i in range(7):
@@ -59,14 +52,12 @@ def compute_monthly_sales(df: pd.DataFrame) -> pd.DataFrame:
             month_key = current_date.strftime("%Y%m")
             month_days[month_key] = month_days.get(month_key, 0) + 1
 
-        # Distribute sales proportionally to months
         for month, days in month_days.items():
             month_sales = sales * (days / 7.0)
             result.append(
                 {"year_month": month, "vegetable": vegetable, "sales": month_sales}
             )
 
-    # Convert to DataFrame and aggregate by month and vegetable
     monthly_df = pd.DataFrame(result)
 
     if not monthly_df.empty:
@@ -87,7 +78,7 @@ def tag_outliers(df: pd.DataFrame) -> pd.DataFrame:
         mask = df["vegetable"] == vegetable
         mean = df.loc[mask, "sales"].mean()
         std = df.loc[mask, "sales"].std()
-        if not pd.isna(std):  # Avoid division by zero
+        if not pd.isna(std):
             df.loc[mask, "is_outlier"] = df.loc[mask, "sales"] > (mean + 5 * std)
 
     return df
@@ -100,7 +91,6 @@ def create_app(config=None):
         config["CSV_PATH"] = PATH_CSV
     app.config.update(config)
 
-    # Ensure data directory exists
     os.makedirs(os.path.dirname(app.config["CSV_PATH"]), exist_ok=True)
 
     @app.route("/post_data", methods=["POST"])
@@ -109,7 +99,6 @@ def create_app(config=None):
         if not isinstance(data, list):
             return jsonify({"error": "Data must be a list of records"}), 400
 
-        # Validate all records before processing any
         required_columns = {"year_week", "vegetable", "sales"}
         for record in data:
             if not isinstance(record, dict) or not all(
@@ -119,13 +108,11 @@ def create_app(config=None):
                     {"error": "All records must contain required columns"}
                 ), 400
 
-        # Read existing data if file exists
         if (
             os.path.isfile(app.config["CSV_PATH"])
             and os.path.getsize(app.config["CSV_PATH"]) > 0
         ):
             df = pd.read_csv(app.config["CSV_PATH"])
-            # Ensure idempotency by removing duplicates
             df = pd.concat([df, pd.DataFrame(data)]).drop_duplicates(
                 subset=["year_week", "vegetable"]
             )
@@ -150,19 +137,14 @@ def create_app(config=None):
         if not os.path.isfile(app.config["CSV_PATH"]):
             return jsonify([]), 200
 
-        # Read and process data
         df = pd.read_csv(app.config["CSV_PATH"])
 
-        # Standardize vegetable names
         df["vegetable"] = df["vegetable"].apply(standardize_vegetable_name)
 
-        # Convert to monthly sales
         monthly_df = compute_monthly_sales(df)
 
-        # Tag outliers
         monthly_df = tag_outliers(monthly_df)
 
-        # Filter outliers if requested
         if remove_outliers:
             monthly_df = monthly_df[~monthly_df["is_outlier"]]
 
