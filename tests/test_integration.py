@@ -1,9 +1,13 @@
 import os
+import sys
+import tempfile
+from pathlib import Path
+
 import pandas as pd
 import pytest
-import tempfile
 
-from app import create_app
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from src.app import create_app
 
 
 @pytest.fixture
