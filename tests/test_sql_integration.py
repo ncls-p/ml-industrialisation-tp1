@@ -22,7 +22,6 @@ def app():
 
 
 def test_init_database(app):
-    """Test that /init_database endpoint correctly initializes the database"""
     with app.test_client() as client:
         client.post(
             "/post_sales/",
@@ -43,7 +42,6 @@ def test_init_database(app):
 
 
 def test_post_sales_idempotence(app):
-    """Test that posting the same data twice doesn't duplicate entries in SQL DB"""
     with app.test_client() as client:
         client.post("/init_database")
 
@@ -65,7 +63,6 @@ def test_post_sales_idempotence(app):
 
 
 def test_invalid_data_sql(app):
-    """Test that invalid data is rejected"""
     with app.test_client() as client:
         response = client.post(
             "/post_sales/",
@@ -75,7 +72,6 @@ def test_invalid_data_sql(app):
 
 
 def test_partial_invalid_data_sql(app):
-    """Test that if any record is invalid, none are processed"""
     with app.test_client() as client:
         client.post("/init_database")
 
@@ -94,7 +90,6 @@ def test_partial_invalid_data_sql(app):
 
 
 def test_get_raw_sales_sql(app):
-    """Test the /get_raw_sales/ endpoint with SQL storage"""
     with app.test_client() as client:
         client.post("/init_database")
 
@@ -115,7 +110,6 @@ def test_get_raw_sales_sql(app):
 
 
 def test_get_monthly_sales_sql(app):
-    """Test the /get_monthly_sales/ endpoint with SQL storage"""
     with app.test_client() as client:
         client.post("/init_database")
 
@@ -148,7 +142,6 @@ def test_get_monthly_sales_sql(app):
 
 
 def test_vegetable_name_standardization_sql(app):
-    """Test vegetable name standardization with SQL storage"""
     with app.test_client() as client:
         client.post("/init_database")
 
@@ -171,7 +164,6 @@ def test_vegetable_name_standardization_sql(app):
 
 
 def test_extended_translations(app):
-    """Test the expanded vegetable name translations that were added"""
     with app.test_client() as client:
         client.post("/init_database")
 

@@ -8,7 +8,6 @@ class VegetableSalesUser(HttpUser):
 
     @task(50)
     def post_data(self):
-        """Simulate posting sales data"""
         year = random.randint(2020, 2023)
         week = random.randint(1, 52)
         date = f"{year}-{week:02d}"
@@ -36,12 +35,10 @@ class VegetableSalesUser(HttpUser):
 
     @task(25)
     def get_raw_sales(self):
-        """Simulate getting raw sales data"""
         self.client.get("/get_raw_sales/")
 
     @task(25)
     def get_monthly_sales(self):
-        """Simulate getting monthly sales data"""
         remove_outliers = random.choice([True, False])
         self.client.get(
             f"/get_monthly_sales/?remove_outliers={str(remove_outliers).lower()}"

@@ -137,7 +137,6 @@ def test_vegetable_name_standardization(app):
 
 
 def test_init_database(app):
-    """Test that the /init_database endpoint properly initializes or resets the database"""
     with app.test_client() as client:
         client.post(
             "/post_sales/",

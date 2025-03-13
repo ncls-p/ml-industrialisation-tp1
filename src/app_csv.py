@@ -8,7 +8,6 @@ PATH_CSV = "data/raw/db.csv"
 
 
 def standardize_vegetable_name(name: str) -> str:
-    """Standardize vegetable names to English."""
     translations = {
         "tomate": "tomato",
         "tomatoes": "tomato",
@@ -35,10 +34,6 @@ def standardize_vegetable_name(name: str) -> str:
 
 
 def compute_monthly_sales(df: pd.DataFrame) -> pd.DataFrame:
-    """Convert weekly sales to monthly sales.
-    For a week with n days in one month and (7-n) days in the next month,
-    allocate n/7 of sales to first month and (7-n)/7 to second month.
-    """
     if df.empty:
         return pd.DataFrame(columns=["year_month", "vegetable", "sales", "is_outlier"])
 
@@ -78,7 +73,6 @@ def compute_monthly_sales(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def tag_outliers(df: pd.DataFrame) -> pd.DataFrame:
-    """Tag outliers based on mean + 5*std per vegetable."""
     if df.empty:
         return df
 
@@ -110,7 +104,6 @@ def create_app(config=None):
 
     @app.route("/init_database", methods=["POST"])
     def init_database():
-        """Initialize or reset the CSV files"""
         bronze_df = pd.DataFrame(columns=["year_week", "vegetable", "sales"])
         silver_df = pd.DataFrame(columns=["year_week", "vegetable", "sales"])
         gold_df = pd.DataFrame(
