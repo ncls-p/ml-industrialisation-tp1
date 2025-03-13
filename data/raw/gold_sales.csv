@@ -1,0 +1,4 @@
+year_month,vegetable,sales,is_outlier
+202001,carrot,150.0,False
+202001,potato,200.0,False
+202001,tomato,100.0,False
