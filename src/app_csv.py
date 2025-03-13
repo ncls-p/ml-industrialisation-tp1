@@ -39,13 +39,16 @@ def compute_monthly_sales(df: pd.DataFrame) -> pd.DataFrame:
     result = []
 
     for _, row in df.iterrows():
-        year_week = row["year_week"]
+        # Use 'date' field instead of year_week
+        date_val = row["date"]
         vegetable = row["vegetable"]
-        sales = row["sales"]
+        sales = row["kilo_sold"]
 
-        # Parse year and week
-        year = year_week // 100
-        week = year_week % 100
+        # Parse year and week from date
+        date_parts = date_val.split("-")
+        year = int(date_parts[0])
+        week = int(date_parts[1])
+        year_week = year * 100 + week
 
         # Get the dates for the week
         # First day of the week (Monday)
@@ -104,14 +107,14 @@ def create_app(config=None):
     # Ensure data directory exists
     os.makedirs(os.path.dirname(app.config["CSV_PATH"]), exist_ok=True)
 
-    @app.route("/post_data", methods=["POST"])
-    def post_data():
+    @app.route("/post_sales/", methods=["POST"])
+    def post_sales():
         data = request.json
         if not isinstance(data, list):
             return jsonify({"error": "Data must be a list of records"}), 400
 
         # Validate all records before processing any
-        required_columns = {"year_week", "vegetable", "sales"}
+        required_columns = {"date", "vegetable", "kilo_sold"}
         for record in data:
             if not isinstance(record, dict) or not all(
                 col in record for col in required_columns
@@ -120,6 +123,23 @@ def create_app(config=None):
                     {"error": "All records must contain required columns"}
                 ), 400
 
+        # Convert from new format to internal format
+        transformed_data = []
+        for record in data:
+            # Extract year and week from date string (e.g., "2020-01" for year 2020, week 1)
+            date_parts = record["date"].split("-")
+            year = int(date_parts[0])
+            week = int(date_parts[1])
+            year_week = year * 100 + week
+
+            transformed_data.append(
+                {
+                    "year_week": year_week,
+                    "vegetable": record["vegetable"],
+                    "sales": record["kilo_sold"],
+                }
+            )
+
         # Read existing data if file exists
         if (
             os.path.isfile(app.config["CSV_PATH"])
@@ -127,24 +147,41 @@ def create_app(config=None):
         ):
             df = pd.read_csv(app.config["CSV_PATH"])
             # Ensure idempotency by removing duplicates
-            df = pd.concat([df, pd.DataFrame(data)]).drop_duplicates(
+            df = pd.concat([df, pd.DataFrame(transformed_data)]).drop_duplicates(
                 subset=["year_week", "vegetable"]
             )
         else:
-            df = pd.DataFrame(data)
+            df = pd.DataFrame(transformed_data)
 
         df.to_csv(app.config["CSV_PATH"], index=False)
         return jsonify({"status": "success"}), 200
 
-    @app.route("/get_raw_sales", methods=["GET"])
+    @app.route("/get_raw_sales/", methods=["GET"])
     def get_raw_sales():
         if not os.path.isfile(app.config["CSV_PATH"]):
             return jsonify([]), 200
 
         df = pd.read_csv(app.config["CSV_PATH"])
-        return jsonify(df.to_dict(orient="records")), 200
 
-    @app.route("/get_monthly_sales", methods=["GET"])
+        # Transform back to the external format
+        result = []
+        for _, row in df.iterrows():
+            year_week = row["year_week"]
+            year = year_week // 100
+            week = year_week % 100
+            date_str = f"{year}-{week:02d}"
+
+            result.append(
+                {
+                    "date": date_str,
+                    "vegetable": row["vegetable"],
+                    "kilo_sold": row["sales"],
+                }
+            )
+
+        return jsonify(result), 200
+
+    @app.route("/get_monthly_sales/", methods=["GET"])
     def get_monthly_sales():
         remove_outliers = request.args.get("remove_outliers", "false").lower() == "true"
 
@@ -154,11 +191,29 @@ def create_app(config=None):
         # Read and process data
         df = pd.read_csv(app.config["CSV_PATH"])
 
+        # Create a temporary dataframe with the date field
+        temp_df = []
+        for _, row in df.iterrows():
+            year_week = row["year_week"]
+            year = year_week // 100
+            week = year_week % 100
+            date_str = f"{year}-{week:02d}"
+
+            temp_df.append(
+                {
+                    "date": date_str,
+                    "vegetable": row["vegetable"],
+                    "kilo_sold": row["sales"],
+                }
+            )
+
+        temp_df = pd.DataFrame(temp_df)
+
         # Standardize vegetable names
-        df["vegetable"] = df["vegetable"].apply(standardize_vegetable_name)
+        temp_df["vegetable"] = temp_df["vegetable"].apply(standardize_vegetable_name)
 
         # Convert to monthly sales
-        monthly_df = compute_monthly_sales(df)
+        monthly_df = compute_monthly_sales(temp_df)
 
         # Tag outliers
         monthly_df = tag_outliers(monthly_df)
@@ -167,7 +222,24 @@ def create_app(config=None):
         if remove_outliers:
             monthly_df = monthly_df[~monthly_df["is_outlier"]]
 
-        return jsonify(monthly_df.to_dict(orient="records")), 200
+        # Transform to the right output format
+        result = []
+        for _, row in monthly_df.iterrows():
+            year_month = row["year_month"]
+            year = int(year_month[:4])
+            month = int(year_month[4:])
+            month_str = f"{year}-{month:02d}"
+
+            result.append(
+                {
+                    "date": month_str,
+                    "vegetable": row["vegetable"],
+                    "kilo_sold": row["sales"],
+                    "is_outlier": bool(row["is_outlier"]),
+                }
+            )
+
+        return jsonify(result), 200
 
     return app
 

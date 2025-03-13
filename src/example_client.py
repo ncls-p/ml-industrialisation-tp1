@@ -8,18 +8,18 @@ BASE_URL = "http://localhost:8000"
 def post_sales_data():
     """Example of posting sales data"""
     data = [
-        {"year_week": 202001, "vegetable": "tomate", "sales": 100},
-        {"year_week": 202002, "vegetable": "carotte", "sales": 150},
-        {"year_week": 202003, "vegetable": "pomme de terre", "sales": 200},
+        {"date": "2020-01", "vegetable": "tomate", "kilo_sold": 100},
+        {"date": "2020-02", "vegetable": "carotte", "kilo_sold": 150},
+        {"date": "2020-03", "vegetable": "pomme de terre", "kilo_sold": 200},
     ]
-    response = requests.post(f"{BASE_URL}/post_data", json=data)
+    response = requests.post(f"{BASE_URL}/post_sales/", json=data)
     print("Post data response:", response.status_code)
     print(response.json())
 
 
 def get_raw_sales():
     """Example of getting raw sales data"""
-    response = requests.get(f"{BASE_URL}/get_raw_sales")
+    response = requests.get(f"{BASE_URL}/get_raw_sales/")
     print("\nRaw sales data:")
     print(json.dumps(response.json(), indent=2))
 
@@ -27,7 +27,7 @@ def get_raw_sales():
 def get_monthly_sales(remove_outliers=False):
     """Example of getting monthly sales data"""
     params = {"remove_outliers": str(remove_outliers).lower()}
-    response = requests.get(f"{BASE_URL}/get_monthly_sales", params=params)
+    response = requests.get(f"{BASE_URL}/get_monthly_sales/", params=params)
     print(f"\nMonthly sales data (remove_outliers={remove_outliers}):")
     print(json.dumps(response.json(), indent=2))
 
